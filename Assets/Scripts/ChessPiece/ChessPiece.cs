@@ -12,7 +12,11 @@ public abstract class ChessPiece : MonoBehaviour
     [SerializeField] protected LayerMask blockLayerMask;
     protected Block currentBlock;
     protected float speed = 10;
+
     protected string log = "";
+    [SerializeField] protected string pieceName;
+    protected const string NORMAL_MOVE = "-";
+	protected const string EAT_MOVE = "x";
 
 	protected virtual void InitializeRay()
     {
@@ -99,7 +103,7 @@ public abstract class ChessPiece : MonoBehaviour
         moveableBlocks.Add(block);
         edibleBlocks.Add(block);
     }
-	protected void Register()
+	protected virtual void Register()
 	{
 		BoardManager.Instance.AddPiece(this);
 		Vector3 origin = transform.position + transform.up;
@@ -147,7 +151,8 @@ public abstract class ChessPiece : MonoBehaviour
 		{
 			return false;
 		}
-        StartCoroutine(MoveToCoroutine(block));
+		log = NormalLog(block);
+		StartCoroutine(MoveToCoroutine(block));
 		return true;
 	}
 	public List<Block> GetEdibleBlocks() {
@@ -175,5 +180,14 @@ public abstract class ChessPiece : MonoBehaviour
     {
 		moveableBlocks.Clear();
 		edibleBlocks.Clear();
+	}
+    protected string NormalLog(Block block)
+    {
+		string log = pieceName + currentBlock.GetId() + (block.GetChessPiece() != null ? EAT_MOVE : NORMAL_MOVE) + block.GetId();
+		return log;
+	}
+    public string GetName()
+	{
+		return pieceName;
 	}
 }

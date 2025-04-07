@@ -51,12 +51,17 @@ public abstract class King : ChessPiece
 			if (block == rightCastleBlock)
 			{
 				// rook's position is 1 block away from original king
-				rightRook.Castle(BoardManager.Instance.GetRelativeBlock(currentBlock, 1, 0)); 
+				rightRook.Castle(BoardManager.Instance.GetRelativeBlock(currentBlock, 1, 0));
+				log = "0 - 0";
 			}
 			else if (block == leftCastleBlock)
 			{
 				// rook's position is 1 block away from original king
 				leftRook.Castle(BoardManager.Instance.GetRelativeBlock(currentBlock, -1, 0));
+				log = "0 - 0 - 0";
+			}
+			else {
+				log = NormalLog(block);
 			}
 		}
 		firstMove = false;
@@ -105,7 +110,8 @@ public abstract class King : ChessPiece
 			if (i == distance)
 			{
 				// left rook is 4 blocks away from king
-				leftRook = BoardManager.Instance.GetRelativeBlock(currentBlock, -4, 0)?.GetChessPiece() as Rook;
+				Block leftRookBlock = BoardManager.Instance.GetRelativeBlock(currentBlock, -4, 0);
+				leftRook = leftRookBlock?.GetChessPiece() as Rook;
 				// check if there is a knight between king and left rook, left knight is 3 blocks away from king
 				bool isKightOccupied = BoardManager.Instance.GetRelativeBlock(currentBlock, -3, 0)?.GetChessPiece() != null;
 				if (leftRook != null && leftRook.FirstMove && !isKightOccupied)
@@ -122,5 +128,10 @@ public abstract class King : ChessPiece
 		leftCastleBlock = null;
 		rightRook = null;
 		leftRook = null;
+	}
+	protected override void Register()
+	{
+		base.Register();
+		pieceName = "K";
 	}
 }

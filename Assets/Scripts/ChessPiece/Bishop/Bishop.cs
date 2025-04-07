@@ -23,6 +23,11 @@ public abstract class Bishop : ChessPiece
 	}
 	override protected void FindWay()
 	{
-		StartCoroutine(FindWayCoroutine(8 * Unit.Length));
+		StartCoroutine(FindWayCoroutine(8 * Unit.Diagonal));
+	}
+	protected override void Register()
+	{
+		base.Register();
+		pieceName = "B";
 	}
 }

@@ -19,6 +19,13 @@ public class BoardManager : MonoBehaviour
 	{
 		Instance = this;
 	}
+	private void Update()
+	{
+		if (checkingBlock.Count > 0)
+		{
+			ShowCheckingBlocks();
+		}
+	}
 	public void AddPiece(ChessPiece piece)
 	{
 		activePieces.Add(piece);
@@ -60,7 +67,7 @@ public class BoardManager : MonoBehaviour
 	}
 	private void GetCheckingBlock(Side side)
 	{
-		checkingBlock.Clear();
+		HideCheckingBlocks();
 		foreach (ChessPiece piece in activePieces)
 		{
 			if (piece.GetSide() != side && piece is King) continue;
@@ -77,8 +84,6 @@ public class BoardManager : MonoBehaviour
 	}
 	public void ShowCheckingBlocks()
 	{
-		HideCheckingBlocks();
-		GetCheckingBlock(goingSide);
 		foreach (Block block in checkingBlock)
 		{
 			block.ShowRed();
@@ -90,20 +95,19 @@ public class BoardManager : MonoBehaviour
 		{
 			block.HideRed();
 		}
+		checkingBlock.Clear();
 	}
 	public void SwitchSide()
 	{
 		goingSide = goingSide == Side.White ? Side.Black : Side.White;
 		stepCount++;
-		ShowCheckingBlocks();
+		HideCheckingBlocks();
+		StartCoroutine(DelayAction.Delay(Time.deltaTime, () => { GetCheckingBlock(goingSide); }));
 		StartCoroutine(DelayAction.Delay(0.4f, () => SwitchCamera()));
 	}
 	private void SwitchCamera()
 	{
 		if (cameraHolder == null) return;
-		float x = cameraHolder.eulerAngles.x;
-		float y = cameraHolder.eulerAngles.y;
-		float z = cameraHolder.eulerAngles.z;
 		cameraHolder.Rotate(new Vector3(0, 180, 0));
 	}
 	public Side GoingSide { get => goingSide; }
@@ -159,5 +163,9 @@ public class BoardManager : MonoBehaviour
 	public int StepCount
 	{
 		get => stepCount;
+	}
+	public List<Block> CheckingBlocks
+	{
+		get => checkingBlock;
 	}
 }

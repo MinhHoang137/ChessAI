@@ -23,4 +23,9 @@ public abstract class Queen : ChessPiece
 	{
 		StartCoroutine(FindWayCoroutine(8 * Unit.Diagonal));
 	}
+	protected override void Register()
+	{
+		base.Register();
+		pieceName = "Q";
+	}
 }

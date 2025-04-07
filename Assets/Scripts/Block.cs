@@ -59,7 +59,7 @@ public class Block : MonoBehaviour
 	}
 	private void Register()
 	{
-		id = horizontal + vertical;
+		id = horizontal.ToLower() + vertical;
 		BoardManager.Instance.AddBlock(id, this);
 	}
 	public void SetHorizontal(string horizontal) { this.horizontal = horizontal; }

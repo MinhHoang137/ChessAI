@@ -50,10 +50,16 @@ public abstract class Pawn : ChessPiece
 		if (block == rightEnPassant)
 		{
 			Eat(rightEnPassantPawn);
+			log = EnPassantLog(block);
 		}
-		if (block == leftEnPassant)
+		else if (block == leftEnPassant)
 		{
 			Eat(leftEnPassantPawn);
+			log = EnPassantLog(block);
+		}
+		else
+		{
+			log = NormalLog(block);
 		}
 		ClearEnPassant();
 		lastStep = BoardManager.Instance.StepCount;
@@ -91,6 +97,13 @@ public abstract class Pawn : ChessPiece
 			enPassantPawn = pawn;
 		}
 	}
+	private string EnPassantLog(Block block)
+	{
+		string log = "";
+		string enPassant = " e.p.";
+		log = $"{pieceName}{currentBlock.GetId()}{EAT_MOVE}{block.GetId()}{enPassant}";
+		return log;
+	}
 	private void ClearEnPassant()
 	{
 		rightEnPassant = null;
@@ -102,5 +115,32 @@ public abstract class Pawn : ChessPiece
 	{
 		string end = GetSide() == Side.White ? "8" : "1";
 		return currentBlock.GetVertical() == end;
+	}
+	public string Promote(ChessPiece[] prefabs)
+	{
+		ChessPiece newPiece = null;
+		if (prefabs == null || prefabs.Length == 0) return "";
+		foreach (ChessPiece prefab in prefabs)
+		{
+			if (GetSide() == prefab.GetSide())
+			{
+				newPiece = Instantiate(prefab, currentBlock.GetChessHolder());
+				newPiece.transform.localPosition = Vector3.zero;
+				break;
+			}
+		}
+		string _log = log;
+		if (newPiece != null)
+		{
+			_log = $"{log}/{newPiece.GetName()}";
+		}
+		BoardManager.Instance.RemovePiece(this);
+		Destroy(gameObject);
+		return _log;
+	}
+	protected override void Register()
+	{
+		base.Register();
+		pieceName = "P";
 	}
 }

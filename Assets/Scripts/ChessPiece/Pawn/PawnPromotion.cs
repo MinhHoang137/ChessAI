@@ -18,30 +18,20 @@ public class PawnPromotion : MonoBehaviour
 		ChessController.Instance.OnPawnPromotion += (sender, e) => { pawn = e.Pawn;
 			gameObject.SetActive(true);
 		};
-		queenButton.onClick.AddListener(() => SpawnPiece(queenPrefabs));
-		rookButton.onClick.AddListener(() => SpawnPiece(rookPrefabs));
-		bishopButton.onClick.AddListener(() => SpawnPiece(bishopPrefabs));
-		knightButton.onClick.AddListener(() => SpawnPiece(knightPrefabs));
+		queenButton.onClick.AddListener(() => Promote(queenPrefabs));
+		rookButton.onClick.AddListener(() => Promote(rookPrefabs));
+		bishopButton.onClick.AddListener(() => Promote(bishopPrefabs));
+		knightButton.onClick.AddListener(() => Promote(knightPrefabs));
 		gameObject.SetActive(false);
 	}
-	private void SpawnPiece<T>(T[] prefabs) where T : ChessPiece
+	private void Promote(ChessPiece[] prefabs)
 	{
-		if (pawn == null || prefabs == null || prefabs.Length == 0) return;
-
-		foreach (T prefab in prefabs)
-		{
-			if (pawn.GetSide() == prefab.GetSide())
-			{
-				ChessPiece newPiece = Instantiate(prefab, pawn.GetCurrentBlock().GetChessHolder());
-				newPiece.transform.localPosition = Vector3.zero;
-				break;
-			}
-		}
-
-		BoardManager.Instance.RemovePiece(pawn);
-		Destroy(pawn.gameObject);
-
+		if (pawn == null) return;
+		string log = pawn.Promote(prefabs);
+		ChessController.Instance.SetSelectable(true);
 		gameObject.SetActive(false);
 		BoardManager.Instance.SwitchSide();
+		Debug.Log(log);
+		ChessController.Instance.InvokeLog(log);
 	}
 }

@@ -29,4 +29,9 @@ public abstract class Knight : ChessPiece
 	{
 		StartCoroutine(FindWayCoroutine(3 * Unit.Length));
 	}
+	protected override void Register()
+	{
+		base.Register();
+		pieceName = "N";
+	}
 }

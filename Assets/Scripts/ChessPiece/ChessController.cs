@@ -12,8 +12,20 @@ public class ChessController : MonoBehaviour
 		}
 	}
 	public event EventHandler<OnPawnPromotionEventArgs> OnPawnPromotion;
+
+	public class OnLogEventArgs : EventArgs
+	{
+		public string log;
+		public OnLogEventArgs(string log)
+		{
+			this.log = log;
+		}
+	}
+	public event EventHandler<OnLogEventArgs> OnLog;
+
 	public static ChessController Instance { get; private set; }
 	[SerializeField] private LayerMask blockLayerMask;
+	private float rayDistance = 999;
 
 	private InputSystem_Actions inputActions;
     private ChessPiece currentPiece = null;
@@ -29,7 +41,7 @@ public class ChessController : MonoBehaviour
 	{
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		
-		if (Physics.Raycast(ray, out RaycastHit hit, 999, blockLayerMask))
+		if (Physics.Raycast(ray, out RaycastHit hit, rayDistance, blockLayerMask))
 		{
 			Block block = hit.transform.GetComponent<Block>();
 			if (currentPiece != null)
@@ -40,8 +52,24 @@ public class ChessController : MonoBehaviour
 					if (currentPiece is Pawn pawn && pawn.CanPromote())
 					{
 						OnPawnPromotion?.Invoke(this, new OnPawnPromotionEventArgs(pawn));
+						SetSelectable(false);
 					}
-					else BoardManager.Instance.SwitchSide();
+					else {
+						BoardManager.Instance.SwitchSide();
+						string log = currentPiece.Log();
+						StartCoroutine(DelayAction.Delay(2 * Time.deltaTime, () =>
+						{
+							if (BoardManager.Instance.CheckingBlocks.Count >= 3)
+							{
+								log += "++";
+							}
+							else if (BoardManager.Instance.CheckingBlocks.Count > 0)
+							{
+								log += "+";
+							}
+							InvokeLog(log);
+						}));
+					} 
 				}
 				currentPiece = null;
 				return;
@@ -61,11 +89,24 @@ public class ChessController : MonoBehaviour
 				currentPiece = null;
 			}
 		}
-		BoardManager.Instance.ShowCheckingBlocks();
 	}
 	private void Update()
 	{
-		Debug.DrawRay(Camera.main.ScreenPointToRay(Input.mousePosition).origin, Camera.main.ScreenPointToRay(Input.mousePosition).direction * 999, Color.red);
+		Debug.DrawRay(Camera.main.ScreenPointToRay(Input.mousePosition).origin, Camera.main.ScreenPointToRay(Input.mousePosition).direction * rayDistance, Color.red);
 	}
 	public ChessPiece ChessPiece { get => currentPiece; }
+	public void SetSelectable(bool value)
+	{
+		if (value)
+		{
+			inputActions.Player.Select.Enable();
+		}
+		else
+		{
+			inputActions.Player.Select.Disable();
+		}
+	}
+	public void InvokeLog(string log) {
+		OnLog?.Invoke(this, new OnLogEventArgs(log));
+	}
 }

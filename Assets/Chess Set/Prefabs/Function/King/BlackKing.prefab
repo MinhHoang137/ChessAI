@@ -49,6 +49,7 @@ MonoBehaviour:
   blockLayerMask:
     serializedVersion: 2
     m_Bits: 64
+  pieceName: K
 --- !u!1001 &8793026927793512645
 PrefabInstance:
   m_ObjectHideFlags: 0

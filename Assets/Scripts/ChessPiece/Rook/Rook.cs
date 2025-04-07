@@ -30,6 +30,7 @@ public abstract class Rook : ChessPiece
 			return false;
 		}
 		firstMove = false;
+		log = NormalLog(block);
 		StartCoroutine(MoveToCoroutine(block));
 		return true;
 	}
@@ -38,4 +39,9 @@ public abstract class Rook : ChessPiece
 		StartCoroutine(MoveToCoroutine(block));
 	}
 	public bool FirstMove { get => firstMove; }
+	protected override void Register()
+	{
+		base.Register();
+		pieceName = "R";
+	}
 }
