@@ -31,7 +31,7 @@ public abstract class King : ChessPiece
 			rays.Add(new Ray(origin, (forward * direction.Item1 + right * direction.Item2).normalized));
 		}
 	}
-	protected override void FindWay()
+	public override void FindWay()
 	{
 		StartCoroutine(FindWayCoroutine(1 * Unit.Diagonal));
 	}

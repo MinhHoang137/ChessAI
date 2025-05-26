@@ -7,7 +7,7 @@ public class WhitePawn : Pawn
     {
         Register();
     }
-	protected override void FindWay()
+	public override void FindWay()
 	{
 		int forward = 1;
         PawnFindWay(forward);

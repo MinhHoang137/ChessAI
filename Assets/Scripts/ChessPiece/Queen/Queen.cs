@@ -19,7 +19,7 @@ public abstract class Queen : ChessPiece
 		rays.Add(new Ray(currentBlock.transform.position, (-currentBlock.transform.forward - currentBlock.transform.right).normalized)); // Xuống-Trái
 	}
 
-	protected override void FindWay()
+	public override void FindWay()
 	{
 		StartCoroutine(FindWayCoroutine(8 * Unit.Diagonal));
 	}

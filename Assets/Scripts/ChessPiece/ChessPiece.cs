@@ -51,7 +51,7 @@ public abstract class ChessPiece : MonoBehaviour
 		yield return null;
 	}
 
-	protected virtual void FindWay()
+	public virtual void FindWay()
     {
         StartCoroutine(FindWayCoroutine(8 * Unit.Length));
 	}
@@ -136,8 +136,8 @@ public abstract class ChessPiece : MonoBehaviour
 		{
 			Eat(block.GetChessPiece());
 		}
-		Vector3 destination = block.transform.position;
 		SetCurrentBlock(block);
+		Vector3 destination = block.transform.position;
 		while (Vector3.Distance(transform.position, destination) > 0.1f)
 		{
 			transform.position = Vector3.Lerp(transform.position, destination, speed * Time.deltaTime);
@@ -169,6 +169,12 @@ public abstract class ChessPiece : MonoBehaviour
 			Debug.LogWarning(name + " causes Exception: " + e.Message);
 		}
 		return edibleBlocks; 
+    }
+
+    public List<Block> GetMoveableBlocks()
+    {
+        FindWay();
+        return moveableBlocks;
     }
     public string Log() { return log; }
     public Block GetCurrentBlock() { return currentBlock; }

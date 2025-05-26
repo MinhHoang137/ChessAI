@@ -258,7 +258,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1785925445}
   m_HandleRect: {fileID: 1785925444}
   m_Direction: 2
-  m_Value: 1.0000002
+  m_Value: 1
   m_Size: 0.73465097
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -794,7 +794,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1440641678}
   m_HandleRect: {fileID: 1440641677}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4912,7 +4912,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -184.85242, y: 98.84149}
+  m_AnchoredPosition: {x: -184.85242, y: -19.158447}
   m_SizeDelta: {x: 321.82715, y: -595.683}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &987618785
@@ -5960,7 +5960,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -191, y: -159}
+  m_AnchoredPosition: {x: -191, y: -277}
   m_SizeDelta: {x: 157.72705, y: 60.913574}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1156501514
@@ -9462,6 +9462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goingSide: 0
+  playerSide: 0
   cameraHolder: {fileID: 987482458}
 --- !u!1 &2038307811
 GameObject:
@@ -9550,6 +9551,8 @@ MonoBehaviour:
   blockLayerMask:
     serializedVersion: 2
     m_Bits: 64
+  pawnPromotion: {fileID: 617014837}
+  aiCommunicator: {fileID: 1273842256}
 --- !u!1001 &2063535520
 PrefabInstance:
   m_ObjectHideFlags: 0

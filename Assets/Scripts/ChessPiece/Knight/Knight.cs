@@ -25,7 +25,7 @@ public abstract class Knight : ChessPiece
 			rays.Add(ray);
 		}
 	}
-	override protected void FindWay()
+	override public void FindWay()
 	{
 		StartCoroutine(FindWayCoroutine(3 * Unit.Length));
 	}

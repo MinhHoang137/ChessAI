@@ -21,7 +21,7 @@ public abstract class Bishop : ChessPiece
 			rays.Add(ray);
 		}
 	}
-	override protected void FindWay()
+	override public void FindWay()
 	{
 		StartCoroutine(FindWayCoroutine(8 * Unit.Diagonal));
 	}

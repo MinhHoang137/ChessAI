@@ -39,5 +39,6 @@ public class LogUI : MonoBehaviour
 		{
 			this.log.SetBlackMove(log);
 		}
+		logHolder.sizeDelta = new Vector2(logHolder.sizeDelta.x, height * logCount);
 	}
 }

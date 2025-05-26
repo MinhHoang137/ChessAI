@@ -8,6 +8,8 @@ public class Move
 	[SerializeField] private string end;
 	[SerializeField] private string promotionPiece;
 
+	public Move() { }
+
 	public Move(string start, string end, string promotionPiece = "")
 	{
 		this.start = start;
@@ -17,13 +19,20 @@ public class Move
 	public string Start
 	{
 		get { return start; }
+		set { start = value; }
 	}
 	public string End
 	{
 		get { return end; }
+		set { end = value; }
 	}
 	public string PromotionPiece
 	{
 		get { return promotionPiece; }
+		set { promotionPiece = value; }
+	}
+	public override string ToString()
+	{
+		return $"Move(Start: {start}, End: {end}, PromotionPiece: {promotionPiece})";
 	}
 }

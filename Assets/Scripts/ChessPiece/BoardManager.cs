@@ -7,11 +7,12 @@ public class BoardManager : MonoBehaviour
 	private List<ChessPiece> activePieces = new();
 	private List<King> kings = new();
 	[SerializeField] private Side goingSide = Side.White;
+	[SerializeField] private Side playerSide = Side.White; // The side the player is playing as
 	[SerializeField] private Transform cameraHolder;
 
 	private Dictionary<string, Block> blockDict = new Dictionary<string, Block>();
 
-	private List<Block> checkingBlock = new(); 
+	private List<Block> checkingBlocks = new(); 
 
 	private int stepCount = 0;
 
@@ -21,7 +22,7 @@ public class BoardManager : MonoBehaviour
 	}
 	private void Update()
 	{
-		if (checkingBlock.Count > 0)
+		if (checkingBlocks.Count > 0)
 		{
 			ShowCheckingBlocks();
 		}
@@ -61,6 +62,20 @@ public class BoardManager : MonoBehaviour
 		}
 		return IsKingCloseToOthers(kingSide);
 	}
+	public bool IsCheckMate()
+	{
+		List<Block> blocks = new List<Block>();
+		List<ChessPiece> pieces = new List<ChessPiece>();
+		foreach (ChessPiece piece in activePieces) {
+			if (piece.GetSide() == goingSide)
+			{
+				blocks.AddRange(piece.GetMoveableBlocks());
+				pieces.Add(piece);
+			}
+		}
+		Debug.Log(blocks.Count + " " + pieces.Count);
+		return blocks.Count == pieces.Count;
+	}
 	private void OnDestroy()
 	{
 		Instance = null;
@@ -76,26 +91,26 @@ public class BoardManager : MonoBehaviour
 			{
 				if (block.GetChessPiece() is King)
 				{
-					checkingBlock.Add(block);
-					checkingBlock.Add(piece.GetCurrentBlock());
+					checkingBlocks.Add(block);
+					checkingBlocks.Add(piece.GetCurrentBlock());
 				}
 			}
 		}
 	}
 	public void ShowCheckingBlocks()
 	{
-		foreach (Block block in checkingBlock)
+		foreach (Block block in checkingBlocks)
 		{
 			block.ShowRed();
 		}
 	}
 	private void HideCheckingBlocks()
 	{
-		foreach (Block block in checkingBlock)
+		foreach (Block block in checkingBlocks)
 		{
 			block.HideRed();
 		}
-		checkingBlock.Clear();
+		checkingBlocks.Clear();
 	}
 	public void SwitchSide()
 	{
@@ -104,6 +119,10 @@ public class BoardManager : MonoBehaviour
 		HideCheckingBlocks();
 		StartCoroutine(DelayAction.Delay(Time.deltaTime, () => { GetCheckingBlock(goingSide); }));
 		StartCoroutine(DelayAction.Delay(0.4f, () => SwitchCamera()));
+		if (IsCheckMate())
+		{
+			Debug.Log("Checkmate: " + goingSide + "loses");
+		}
 	}
 	private void SwitchCamera()
 	{
@@ -160,12 +179,21 @@ public class BoardManager : MonoBehaviour
 		Block block1 = GetBlock($"{(char)(x + dirX)}{(char)(y + dirY)}");
 		return block1;
 	}
+	public bool IsPlayerTurn()
+	{
+		return goingSide == playerSide;
+	}
 	public int StepCount
 	{
 		get => stepCount;
 	}
 	public List<Block> CheckingBlocks
 	{
-		get => checkingBlock;
+		get => checkingBlocks;
+	}
+	public Side PlayerSide
+	{
+		get => playerSide;
+		set => playerSide = value;
 	}
 }
