@@ -9,6 +9,7 @@ public class BoardManager : MonoBehaviour
 	[SerializeField] private Side goingSide = Side.White;
 	[SerializeField] private Side playerSide = Side.White; // The side the player is playing as
 	[SerializeField] private Transform cameraHolder;
+	public Side WinSide { get; private set; }
 
 	private Dictionary<string, Block> blockDict = new Dictionary<string, Block>();
 
@@ -73,7 +74,7 @@ public class BoardManager : MonoBehaviour
 				pieces.Add(piece);
 			}
 		}
-		Debug.Log(blocks.Count + " " + pieces.Count);
+		//Debug.Log(blocks.Count + " " + pieces.Count);
 		return blocks.Count == pieces.Count;
 	}
 	private void OnDestroy()
@@ -122,12 +123,13 @@ public class BoardManager : MonoBehaviour
 		if (IsCheckMate())
 		{
 			Debug.Log("Checkmate: " + goingSide + "loses");
+			WinSide = goingSide == Side.White ? Side.Black : Side.White; // The other side wins
 		}
 	}
 	private void SwitchCamera()
 	{
 		if (cameraHolder == null) return;
-		cameraHolder.Rotate(new Vector3(0, 180, 0));
+		//cameraHolder.Rotate(new Vector3(0, 180, 0));
 	}
 	public Side GoingSide { get => goingSide; }
 	public Block GetBlock(string id)
@@ -194,6 +196,13 @@ public class BoardManager : MonoBehaviour
 	public Side PlayerSide
 	{
 		get => playerSide;
-		set => playerSide = value;
+		set { 
+			playerSide = value; 
+			float angle = playerSide == Side.White ? 0 : 180; // Rotate camera based on player side
+			if (cameraHolder != null)
+			{
+				cameraHolder.rotation = Quaternion.Euler(0, angle, 0);
+			}
+		}
 	}
 }

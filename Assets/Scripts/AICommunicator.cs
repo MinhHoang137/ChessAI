@@ -8,13 +8,11 @@ using System.Collections.Concurrent;
 
 public class AICommunicator : MonoBehaviour
 {
+	[Serializable]
 	public class MoveEventArgs : EventArgs
 	{
 		public Move Move { get; private set; }
-		public MoveEventArgs(Move move)
-		{
-			Move = move;
-		}
+		public MoveEventArgs(Move move) => Move = move;
 	}
 
 	public event EventHandler<MoveEventArgs> OnAIMove;
@@ -26,8 +24,10 @@ public class AICommunicator : MonoBehaviour
 	private void Start()
 	{
 		isRunning = true;
-		listenThread = new Thread(ListenLoop);
-		listenThread.IsBackground = true;
+		listenThread = new Thread(ListenLoop)
+		{
+			IsBackground = true
+		};
 		listenThread.Start();
 	}
 
@@ -42,23 +42,24 @@ public class AICommunicator : MonoBehaviour
 	private void OnDestroy()
 	{
 		isRunning = false;
-		listenThread?.Join(); // Wait for thread to stop
+		listenThread?.Join();
 	}
 
 	private void ListenLoop()
 	{
 		TcpListener listener = null;
+
 		try
 		{
 			listener = new TcpListener(IPAddress.Loopback, 5051);
 			listener.Start();
-			Debug.Log("AICommunicator listening on 127.0.0.1:5051");
+			Debug.Log("[AICommunicator] Listening on 127.0.0.1:5051");
 
 			while (isRunning)
 			{
 				if (!listener.Pending())
 				{
-					Thread.Sleep(100); // Reduce CPU usage
+					Thread.Sleep(100);
 					continue;
 				}
 
@@ -77,25 +78,25 @@ public class AICommunicator : MonoBehaviour
 					}
 					catch (Exception ex)
 					{
-						Debug.LogError("Failed to parse Move JSON: " + ex.Message);
+						Debug.LogError("[AICommunicator] Failed to parse Move JSON: " + ex.Message);
 					}
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Debug.LogError("Socket error: " + ex.Message);
+			Debug.LogError("[AICommunicator] Socket error: " + ex.Message);
 		}
 		finally
 		{
 			listener?.Stop();
 		}
 	}
-	public void SendMove(Move move, int retryCount = 3, int timeoutMillis = 2000)
+
+	private void SendJsonToPort(string json, int port, int retryCount = 3, int timeoutMillis = 2000)
 	{
 		Thread sendThread = new Thread(() =>
 		{
-			string json = JsonUtility.ToJson(move);
 			int attempts = 0;
 			bool sent = false;
 
@@ -105,13 +106,11 @@ public class AICommunicator : MonoBehaviour
 				{
 					using (TcpClient client = new TcpClient())
 					{
-						IAsyncResult result = client.BeginConnect(IPAddress.Loopback, 5052, null, null);
+						IAsyncResult result = client.BeginConnect(IPAddress.Loopback, port, null, null);
 						bool success = result.AsyncWaitHandle.WaitOne(timeoutMillis);
 
 						if (!success)
-						{
 							throw new TimeoutException("Connection timed out.");
-						}
 
 						using (NetworkStream stream = client.GetStream())
 						{
@@ -124,15 +123,15 @@ public class AICommunicator : MonoBehaviour
 				}
 				catch (Exception ex)
 				{
-					Debug.LogWarning($"[SendMove] Attempt {attempts + 1} failed: {ex.Message}");
+					Debug.LogWarning($"[SendJsonToPort] Attempt {attempts + 1} failed: {ex.Message}");
 					attempts++;
-					Thread.Sleep(200); // Đợi một chút rồi thử lại
+					Thread.Sleep(200);
 				}
 			}
 
 			if (!sent)
 			{
-				Debug.LogError("[SendMove] Failed to send move after multiple attempts.");
+				Debug.LogError($"[SendJsonToPort] Failed to send data after {retryCount} attempts to port {port}.");
 			}
 		});
 
@@ -140,4 +139,15 @@ public class AICommunicator : MonoBehaviour
 		sendThread.Start();
 	}
 
+	public void SendMove(Move move)
+	{
+		string json = JsonUtility.ToJson(move);
+		SendJsonToPort(json, 5052); // Mặc định gửi move tới port 5052
+	}
+
+	public void SendGameInfo(GameInfo info)
+	{
+		string json = JsonUtility.ToJson(info);
+		SendJsonToPort(json, 5050); // Gửi GameInfo tới port 5050
+	}
 }

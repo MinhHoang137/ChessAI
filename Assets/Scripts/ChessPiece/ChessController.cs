@@ -50,7 +50,7 @@ public class ChessController : MonoBehaviour
 	public Move GetMove() {  return move; }
 	private void Select()
 	{
-		//if (!BoardManager.IsPlayerTurn()) return;
+		if (!BoardManager.IsPlayerTurn()) return;
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
 		if (Physics.Raycast(ray, out RaycastHit hit, rayDistance, blockLayerMask))
